@@ -1,0 +1,7 @@
+node_modules
+.env
+.git
+deploy/generated
+deploy/netlify/dist
+*.log
+fly.toml

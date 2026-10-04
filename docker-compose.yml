@@ -1,0 +1,43 @@
+# DDD AI Workforce — any VPS / server with Docker.
+#   App only (HTTP on port 8765):     docker compose up -d --build
+#   App + automatic HTTPS on domain:  docker compose --profile https up -d --build
+#     (set CADDY_DOMAIN and CADDY_EMAIL in .env first; DDD_HOSTING does this for you)
+services:
+  app:
+    build: .
+    image: ddd-workforce:6
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DDD_DATA_DIR: /data
+      HOST: 0.0.0.0
+      PORT: "8765"
+      TRUST_PROXY: "1"
+    ports:
+      - "${APP_PUBLISH_PORT:-8765}:8765"
+    volumes:
+      - ddd-data:/data
+    stop_grace_period: 15s
+
+  caddy:
+    image: caddy:2
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      DOMAIN: ${CADDY_DOMAIN:-localhost}
+      EMAIL: ${CADDY_EMAIL:-admin@example.com}
+      UPSTREAM: app:8765
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile.template:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  ddd-data:
+  caddy-data:
+  caddy-config:

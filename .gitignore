@@ -1,0 +1,6 @@
+node_modules/
+.env
+deploy/generated/
+deploy/netlify/dist/
+*.log
+ddd_data/

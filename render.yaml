@@ -1,0 +1,23 @@
+# DDD AI Workforce on Render (Blueprint). Requires a paid instance: free
+# instances sleep and cannot attach a persistent disk for the database.
+services:
+  - type: web
+    name: ddd-workforce
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/ready
+    envVars:
+      - key: DDD_DATA_DIR
+        value: /data
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DDD_MAX_EMPLOYEES
+        value: "550"
+      - key: SUPER_ADMIN_PASS
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+    disk:
+      name: ddd-data
+      mountPath: /data
+      sizeGB: 1
